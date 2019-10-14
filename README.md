@@ -6,6 +6,6 @@ Just you have to know their Ip address's and the Port address's they are using t
 Features: 
 -Messaging
 -Textual File Sharing
--Background Color Control of Own Device as well as remotes users.
+-Background Color Control of Own Device as well as remote users.
 -Saving Messages
 

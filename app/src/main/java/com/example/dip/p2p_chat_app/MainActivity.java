@@ -64,9 +64,6 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     int tempmargin = 400;
-
-    String check;
-
     Button btnOnOff, btnListen, btnSend, btnSave, btnChange, btnChoose, btnSendFile,btnCancel,btnConnect;
     ListView listView;
     String read_msg = "",trPortStr,trIpStr;

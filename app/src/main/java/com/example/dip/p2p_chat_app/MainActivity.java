@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnOnOff, btnListen, btnSend, btnSave, btnChange, btnChoose, btnSendFile,btnCancel,btnConnect;
     ListView listView;
     String read_msg = "",trPortStr,trIpStr;
-    EditText writeMsg, rcvPort, trPort, trIp, clrCode;
+    EditText writeMsg, rcvPort, trPort, trIp, clrCode,userName;
     WifiManager wifiManager;
     //WifiP2pManager mManager;
    // WifiP2pManager.Channel mChannel;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     ServerClass serverClass;
     ClientClass clientClass;
     Receive receive;
-    String myIp, FILE_NAME, textFileData;
+    String myIp, FILE_NAME, textFileData,userNameStr;
     private static final int EXTERNAL_STORAGE_CODE = 1;
     private static final int READ_CODE = 2;
     //private static final int READ_EXTERNAL_STORAGE_CODE = 3;
@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
             menu.getItem(1).setEnabled(false);
             menu.getItem(2).setEnabled(true);
             menu.getItem(3).setEnabled(false);
-            menu.getItem(4).setEnabled(false);
-            menu.getItem(5).setEnabled(false);
+            menu.getItem(4).setEnabled(true);
+            menu.getItem(5).setEnabled(true);
         }
         else{
             menu.getItem(0).setEnabled(true);
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.resetbg:
-                wallpaper.setBackgroundResource(R.drawable.bg);
+                wallpaper.setBackgroundResource(R.drawable.backgroundgradient);
                 return true;
 
             case R.id.mainPage:
@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                textFileData="";
                fileName.setText("");
                fileName.setVisibility(View.GONE);
                btnSendFile.setVisibility(View.GONE);
@@ -253,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialWork() {
+        userName = (EditText) findViewById(R.id.userName);
         intent = new Intent(this,MainActivity.class);
         wallpaper = (ConstraintLayout) findViewById(R.id.wallpaper);
         btnCancel = (Button) findViewById(R.id.cancel);
@@ -281,24 +283,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Give Receiving Port", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (userName.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Give a name", Toast.LENGTH_SHORT).show();
+            return;
+        }
         {
+            userNameStr=userName.getText().toString();
             myIp = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
-            serverFlag = 1;
             serverClass = new ServerClass(Integer.parseInt(rcvPort));
             serverClass.start();
         }
     }
 
     void send(String trIp, String trPort, String msg) {
-        if (trIp.isEmpty()) {
-            Toast.makeText(this, "Give Target Ip", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (trPort.isEmpty()) {
-            Toast.makeText(this, "Give Target Port", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         if (msg.isEmpty()) {
             if (flag == 1)
                 Toast.makeText(this, "Write something on the msg field", Toast.LENGTH_SHORT).show();
@@ -342,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
         rcvPort.setVisibility(View.GONE);
         trIp.setVisibility(View.GONE);
+        userName.setVisibility(View.GONE);
         trPort.setVisibility(View.GONE);
         btnConnect.setVisibility(View.GONE);
         btnListen.setVisibility(View.GONE);
@@ -401,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         wallpaper.setBackgroundColor(Color.parseColor(Code));
                                     } catch (Exception e) {
-                                        Toast.makeText(MainActivity.this, "Invalid Color code", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "Invalid Color code received", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -417,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     TextView tv = createTrcv();
-                                    tv.setText("(Remote)" + remoteip + "\n" + "File reveived as : " + name + ".txt" + "\n"
+                                    tv.setText(remoteip  + "File reveived as : " + name + ".txt" + "\n"
                                             + "Saved as : " + name + "(" + myIp + trIp.getText() + "--" + timeStamp + ").txt");
                                     messageContainer.addView(tv);
                                     saveTotxtFile(name + "(" + myIp + trIp.getText() + "--" + timeStamp + ")", data);
@@ -428,11 +426,14 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     TextView tv = createTrcv();
-                                    tv.setText("(Remote)" + msg);
+                                    tv.setText(msg);
                                     messageContainer.addView(tv);
                                 }
                             });
-                            handler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                            //handler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                            Message message = Message.obtain();
+                            message.obj =(msg);
+                            handler1.sendMessage(message);
                         }
                     }
 
@@ -454,21 +455,34 @@ public class MainActivity extends AppCompatActivity {
         public ServerClass(int port) {
             this.port = port;
             this.act = act;
-            Toast.makeText(MainActivity.this, "Listening on Port : " + Integer.toString(port), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void run() {
             try {
                 serverSocket = new ServerSocket(port);
-                Log.d("What is this", "Waiting for client...");
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        serverFlag = 1;
+                        Toast.makeText(MainActivity.this, "Listening on Port : " + Integer.toString(port), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 while ((socket = serverSocket.accept()) != null) {
-                    Log.d("What is this", "A client is connected");
+
                     receive = new Receive(socket);
                     receive.start();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                            Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+               // e.printStackTrace();
             }
         }
     }
@@ -499,7 +513,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 socket.connect(new InetSocketAddress(trIp, trPort));
-                Log.d("What is this", "Client is connected to server");
                 outputStream = socket.getOutputStream();
                 final String Code;
                 if (msg.indexOf("ITSACOLORCHNGREQ") != -1) {
@@ -523,13 +536,13 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             TextView tv = createTsend();
-                            tv.setText("(You)<" + myIp + ">" + "\n" + "File sent : " + fileName.getText().toString());
+                            tv.setText("(You)<" + myIp + ">" + "\n\n" + "File sent : " + fileName.getText().toString());
                             fileName.setText("");
                             textFileData = "";
                             messageContainer.addView(tv);
                         }
                     });
-                    outputStream.write(("<" + myIp + ">" + msg).getBytes());
+                    outputStream.write(("("+userNameStr+")<" + myIp + ">" + "\n\n" + msg).getBytes());
                     socket.close();
 
                 } else {
@@ -538,39 +551,42 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             writeMsg.setText("");
                             TextView tv = createTsend();
-                            tv.setText("(You)<" + myIp + ">" + "\n" + msg);
+                            tv.setText("(You)<" + myIp + ">" + "\n\n" + msg);
                             messageContainer.addView(tv);
                         }
                     });
                     Message message = Message.obtain();
-                    message.obj = ("(You)<" + myIp + ">" + "\n" + msg);
+                    message.obj = ("(You)<" + myIp + ">" + "\n\n" + msg);
                     handler1.sendMessage(message);
-                    outputStream.write(("<" + myIp + ">" + "\n" + msg).getBytes());
+                    outputStream.write(("("+userNameStr+")<" + myIp + ">" + "\n\n" + msg).getBytes());
                     socket.close();
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            return ;
         }
 
     }
+    // Log.d("What is this", "Waiting for client...");
 
     //Handler is used as a anchor point to two different thread (Can be handled in 2 ways)
 
-    Handler handler = new Handler(new Handler.Callback() {
+ /*   Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_READ:
                     byte[] readBuff = (byte[]) msg.obj;
                     String tempMsg = new String(readBuff, 0, msg.arg1);
-                    read_msg = read_msg + "\n " + "(Remote User)" + tempMsg;
+                    read_msg = read_msg + "\n "+ tempMsg;
                     break;
             }
             return true;
         }
-    });
+    });*/
 
     Handler handler1 = new Handler(new Handler.Callback() {
         @Override
@@ -620,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
         //tv.setBackgroundColor(Color.BLUE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        params.setMargins(0,tempmargin,0,0);
+        params.setMargins(0,tempmargin,0,20);
         tempmargin=0;
         //params.weight = 1.0f;
         params.gravity = android.view.Gravity.RIGHT;
@@ -639,13 +655,13 @@ public class MainActivity extends AppCompatActivity {
         //tv.setPadding(10,0,300,0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        params.setMargins(0,tempmargin,0,0);
+        params.setMargins(0,tempmargin,0,20);
         tempmargin=0;
         //params.weight = 1.0f;
         params.gravity = android.view.Gravity.LEFT;
         tv.setLayoutParams(params);
         tv.setLayoutParams(params);
-        tv.setTextColor(Color.WHITE);
+        tv.setTextColor(Color.BLACK);
         tv.setPadding(30,30,30,30);
         tv.setBackgroundResource(R.drawable.tv1);
         return tv;

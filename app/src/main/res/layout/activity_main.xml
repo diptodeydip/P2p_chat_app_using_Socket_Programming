@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/wallpaper"
-    android:background="@drawable/bg"
+    android:background="@drawable/backgroundgradient"
     tools:context=".MainActivity">
 
 
@@ -43,11 +43,14 @@
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="44dp"
         android:background="@drawable/btn_bg"
         android:text="Create Server"
         android:textSize="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/receivePort"
         app:layout_constraintTop_toTopOf="@+id/guideline5" />
 
     <Button
@@ -66,23 +69,33 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/targetPort"
         app:layout_constraintTop_toBottomOf="@+id/listen"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintVertical_bias="0.916" />
 
     <EditText
         android:id="@+id/receivePort"
-        android:layout_width="96dp"
+        android:layout_width="82dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="44dp"
         android:ems="10"
         android:hint="Receiving Port"
         android:inputType="textPersonName"
         android:textSize="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/listen"
-        app:layout_constraintHorizontal_bias="0.573"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/userName"
         app:layout_constraintTop_toTopOf="@+id/guideline5" />
+
+    <EditText
+        android:id="@+id/userName"
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textSize="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!--
         <GridLayout
@@ -217,25 +230,26 @@
 
     <EditText
         android:id="@+id/targetIp"
-        android:layout_width="109dp"
+        android:layout_width="104dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Target Ip"
         android:inputType="textPersonName"
         android:textSize="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/receivePort"
-        app:layout_constraintVertical_bias="0.416" />
+        app:layout_constraintTop_toBottomOf="@+id/userName"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/targetPort"
         android:layout_width="82dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="Target Port"
@@ -244,7 +258,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/targetIp"
         app:layout_constraintTop_toBottomOf="@+id/receivePort"
-        app:layout_constraintVertical_bias="0.416" />
+        app:layout_constraintVertical_bias="1.0" />
 
 
     <EditText

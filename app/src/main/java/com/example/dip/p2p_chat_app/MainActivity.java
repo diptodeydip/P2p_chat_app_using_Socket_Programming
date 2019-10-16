@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.saveMsg:
                 String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis());
-                save("(" + myIp +"--"+ trIp.getText() + "--" + timeStamp + ")", read_msg);
+                save("(" + trIp.getText() + "--" + timeStamp + ")", read_msg);
                 return true;
 
             case R.id.myIp:
@@ -415,9 +415,11 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     TextView tv = createTrcv();
                                     tv.setText(remoteip  + "File reveived as : " + name + ".txt" + "\n"
-                                            + "Saved as : " + name + "(" + myIp + trIp.getText() + "--" + timeStamp + ").txt");
+                                            + "Saved as : " + name + "(" +trIp.getText() + "--" + timeStamp + ").txt");
                                     messageContainer.addView(tv);
-                                    saveTotxtFile(name + "(" + myIp + trIp.getText() + "--" + timeStamp + ")", data);
+                                    tv = createTimeTrcv();
+                                    messageContainer.addView(tv);
+                                    saveTotxtFile(name + "(" + trIp.getText() + "--" + timeStamp + ")", data);
                                 }
                             });
                         } else {
@@ -426,6 +428,8 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     TextView tv = createTrcv();
                                     tv.setText(msg);
+                                    messageContainer.addView(tv);
+                                    tv = createTimeTrcv();
                                     messageContainer.addView(tv);
                                 }
                             });
@@ -539,6 +543,8 @@ public class MainActivity extends AppCompatActivity {
                             fileName.setText("");
                             textFileData = "";
                             messageContainer.addView(tv);
+                            tv = createTimeTsend();
+                            messageContainer.addView(tv);
                         }
                     });
                     outputStream.write(("("+userNameStr+")<" + myIp + ">" + "\n\n" + msg).getBytes());
@@ -551,6 +557,8 @@ public class MainActivity extends AppCompatActivity {
                             writeMsg.setText("");
                             TextView tv = createTsend();
                             tv.setText("(You)<" + myIp + ">" + "\n\n" + msg);
+                            messageContainer.addView(tv);
+                            tv = createTimeTsend();
                             messageContainer.addView(tv);
                         }
                     });
@@ -643,6 +651,34 @@ public class MainActivity extends AppCompatActivity {
 
         tv.setPadding(30,30,30,30);
         tv.setBackgroundResource(R.drawable.tv);
+        return tv;
+    }
+
+    TextView createTimeTsend() {
+        TextView tv = new TextView(this);
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextColor(Color.BLACK);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        params.gravity = android.view.Gravity.RIGHT;
+        tv.setLayoutParams(params);
+        final String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis());
+        tv.setText(timeStamp);
+        //tv.setBackgroundResource(R.drawable.tv);
+        return tv;
+    }
+
+    TextView createTimeTrcv() {
+        TextView tv = new TextView(this);
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextColor(Color.BLACK);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        params.gravity = android.view.Gravity.LEFT;
+        tv.setLayoutParams(params);
+        final String timeStamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis());
+        tv.setText(timeStamp);
+        //tv.setBackgroundResource(R.drawable.tv);
         return tv;
     }
 

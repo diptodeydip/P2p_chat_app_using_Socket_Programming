@@ -287,8 +287,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         {
-            userNameStr=userName.getText().toString();
-            myIp = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
             serverClass = new ServerClass(Integer.parseInt(rcvPort));
             serverClass.start();
         }
@@ -336,18 +334,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        rcvPort.setVisibility(View.GONE);
-        trIp.setVisibility(View.GONE);
-        userName.setVisibility(View.GONE);
-        trPort.setVisibility(View.GONE);
-        btnConnect.setVisibility(View.GONE);
-        btnListen.setVisibility(View.GONE);
-        chatWindow.setVisibility(View.VISIBLE);
-        btnChange.setVisibility(View.VISIBLE);
-        btnSend.setVisibility(View.VISIBLE);
-        writeMsg.setVisibility(View.VISIBLE);
-        clrCode.setVisibility(View.VISIBLE);
-        connceted = 1;
+        CheckConnection ck = new CheckConnection(Ip, Integer.parseInt(Port));
+        ck.start();
+
     }
 
 /*    @Override
@@ -442,6 +431,12 @@ public class MainActivity extends AppCompatActivity {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Don't know what happened", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         }
@@ -457,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
 
         public ServerClass(int port) {
             this.port = port;
-            this.act = act;
+          //  this.act = act;
         }
 
         @Override
@@ -469,11 +464,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         serverFlag = 1;
+                        userNameStr=userName.getText().toString();
+                        myIp = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
                         Toast.makeText(MainActivity.this, "Listening on Port : " + Integer.toString(port), Toast.LENGTH_SHORT).show();
                     }
                 });
 
-                while ((socket = serverSocket.accept()) != null) {
+               while ((socket = serverSocket.accept()) != null)
+                {
 
                     receive = new Receive(socket);
                     receive.start();
@@ -502,7 +500,7 @@ public class MainActivity extends AppCompatActivity {
             this.trIp = trIp;
             this.trPort = trPort;
             this.msg = msg;
-            this.act = act;
+       //     this.act = act;
             socket = new Socket();
         }
 
@@ -571,6 +569,62 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                            Toast.makeText(MainActivity.this, "Don't know what happened", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            return ;
+        }
+
+    }
+
+    public class CheckConnection extends Thread {
+        Socket socket;
+        String Ip;
+        int Port;
+        MainActivity act;
+
+        public CheckConnection(String trIp, int trPort) {
+            this.Ip = trIp;
+            this.Port = trPort;
+            socket = new Socket();
+        }
+
+        @Override
+        public void run() {
+            try {
+
+                socket.connect(new InetSocketAddress(Ip, Port));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                        rcvPort.setVisibility(View.GONE);
+                        trIp.setVisibility(View.GONE);
+                        userName.setVisibility(View.GONE);
+                        trPort.setVisibility(View.GONE);
+                        btnConnect.setVisibility(View.GONE);
+                        btnListen.setVisibility(View.GONE);
+                        chatWindow.setVisibility(View.VISIBLE);
+                        btnChange.setVisibility(View.VISIBLE);
+                        btnSend.setVisibility(View.VISIBLE);
+                        writeMsg.setVisibility(View.VISIBLE);
+                        clrCode.setVisibility(View.VISIBLE);
+                        connceted = 1;
+                    }
+                });
+                socket.close();
+            } catch (IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Target Ip/Port is not valid", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             return ;

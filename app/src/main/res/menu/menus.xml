@@ -22,6 +22,10 @@
         android:title="Reset Background"
         app:showAsAction="never"
         />
+    <item android:id="@+id/onoffsound"
+        android:title="On/Off sound"
+        app:showAsAction="never"
+        />
     <item android:id="@+id/mainPage"
         android:title="Exit"
         app:showAsAction="never"

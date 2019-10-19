@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     Intent intent;
     ScrollView sv;
     MediaPlayer mp;
+    int soundflg=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             menu.getItem(3).setEnabled(false);
             menu.getItem(4).setEnabled(true);
             menu.getItem(5).setEnabled(true);
+            menu.getItem(6).setEnabled(true);
         }
         else{
             menu.getItem(0).setEnabled(true);
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
             menu.getItem(3).setEnabled(true);
             menu.getItem(4).setEnabled(true);
             menu.getItem(5).setEnabled(true);
+            menu.getItem(6).setEnabled(true);
         }
         return true;
     }
@@ -180,6 +184,16 @@ public class MainActivity extends AppCompatActivity {
             case R.id.resetbg:
                 wallpaper.setBackgroundResource(R.drawable.backgroundgradient);
                 return true;
+
+            case R.id.onoffsound:
+                if(soundflg==1){soundflg=0;
+                Toast.makeText(this,"Notification Sound is off",Toast.LENGTH_LONG).show();}
+                else {
+                    soundflg = 1;
+                    Toast.makeText(this,"Notification Sound is on", Toast.LENGTH_LONG).show();
+                }
+                return true;
+
 
             case R.id.mainPage:
                 //wifiManager.setWifiEnabled(false);
@@ -386,7 +400,8 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mp.start();
+                                    if(soundflg==1)
+                                    {mp.start();}
                                     try {
                                         wallpaper.setBackgroundColor(Color.parseColor(Code));
                                     } catch (Exception e) {
@@ -405,7 +420,8 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mp.start();
+                                    if(soundflg==1)
+                                    {mp.start();}
                                     TextView tv = createTrcv();
                                     tv.setText(remoteip  + "File reveived as : " + name + ".txt" + "\n"
                                             + "Saved as : " + name + "(" +trIp.getText() + "--" + timeStamp + ").txt");
@@ -421,7 +437,8 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mp.start();
+                                    if(soundflg==1)
+                                    {mp.start();}
                                     TextView tv = createTrcv();
                                     tv.setText(msg);
                                     messageContainer.addView(tv);

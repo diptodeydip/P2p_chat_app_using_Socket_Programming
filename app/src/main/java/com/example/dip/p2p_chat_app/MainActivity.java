@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -37,6 +38,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,10 +88,8 @@ public class MainActivity extends AppCompatActivity {
     TextView fileName,ip;
     ConstraintLayout wallpaper;
     Intent intent;
-
-    public MainActivity() {
-    }
-
+    ScrollView sv;
+    MediaPlayer mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -253,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialWork() {
+        mp = MediaPlayer.create(this, R.raw.notification);
+        sv = (ScrollView) findViewById(R.id.sv);
         userName = (EditText) findViewById(R.id.userName);
         intent = new Intent(this,MainActivity.class);
         wallpaper = (ConstraintLayout) findViewById(R.id.wallpaper);
@@ -384,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    mp.start();
                                     try {
                                         wallpaper.setBackgroundColor(Color.parseColor(Code));
                                     } catch (Exception e) {
@@ -402,12 +405,15 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    mp.start();
                                     TextView tv = createTrcv();
                                     tv.setText(remoteip  + "File reveived as : " + name + ".txt" + "\n"
                                             + "Saved as : " + name + "(" +trIp.getText() + "--" + timeStamp + ").txt");
                                     messageContainer.addView(tv);
                                     tv = createTimeTrcv();
                                     messageContainer.addView(tv);
+                                    //sv.scrollTo(0, sv.getBottom());
+                                    sv.fullScroll(View.FOCUS_DOWN);
                                     saveTotxtFile(name + "(" + trIp.getText() + "--" + timeStamp + ")", data);
                                 }
                             });
@@ -415,11 +421,14 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    mp.start();
                                     TextView tv = createTrcv();
                                     tv.setText(msg);
                                     messageContainer.addView(tv);
                                     tv = createTimeTrcv();
                                     messageContainer.addView(tv);
+                                    //sv.scrollTo(0, sv.getBottom());
+                                    sv.fullScroll(View.FOCUS_DOWN);
                                 }
                             });
                             //handler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
@@ -507,14 +516,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
+                socket.connect(new InetSocketAddress(trIp, trPort));
+                outputStream = socket.getOutputStream();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(MainActivity.this, "Msg Sent to : " + trIp + ":" + Integer.toString(trPort), Toast.LENGTH_SHORT).show();
                     }
                 });
-                socket.connect(new InetSocketAddress(trIp, trPort));
-                outputStream = socket.getOutputStream();
                 final String Code;
                 if (msg.indexOf("ITSACOLORCHNGREQ") != -1) {
 
@@ -543,6 +552,8 @@ public class MainActivity extends AppCompatActivity {
                             messageContainer.addView(tv);
                             tv = createTimeTsend();
                             messageContainer.addView(tv);
+                            //sv.scrollTo(0, sv.getBottom());
+                            sv.fullScroll(View.FOCUS_DOWN);
                         }
                     });
                     outputStream.write(("("+userNameStr+")<" + myIp + ">" + "\n\n" + msg).getBytes());
@@ -558,6 +569,9 @@ public class MainActivity extends AppCompatActivity {
                             messageContainer.addView(tv);
                             tv = createTimeTsend();
                             messageContainer.addView(tv);
+                            //sv.scrollTo(0, sv.getBottom());
+                            sv.fullScroll(View.FOCUS_DOWN);
+
                         }
                     });
                     Message message = Message.obtain();

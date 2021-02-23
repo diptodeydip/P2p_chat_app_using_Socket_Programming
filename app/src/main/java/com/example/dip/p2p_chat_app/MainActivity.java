@@ -720,6 +720,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    String readText(String path) {
+        File file = new File(Environment.getExternalStorageDirectory() + "/" + path);
+        StringBuilder data = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                data.append(line);
+                data.append("\n");
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data.toString();
+    }
+
+
     TextView createTsend() {
         TextView tv = new TextView(this);
         tv.setTypeface(null, Typeface.BOLD);
@@ -831,21 +849,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    String readText(String path) {
-        File file = new File(Environment.getExternalStorageDirectory() + "/" + path);
-        StringBuilder data = new StringBuilder();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                data.append(line);
-                data.append("\n");
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return data.toString();
-    }
 }
 

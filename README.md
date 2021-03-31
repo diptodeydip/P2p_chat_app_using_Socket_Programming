@@ -8,9 +8,9 @@ It was developed as a part of the coursework for Computer Networking lab course 
 
 
 ## Team Member
--[Md. Shahriar Habib](https://github.com/Shahriar-88)
-
 -[Dipto Dey Dip](https://github.com/diptodeydip)
+
+-[Md. Shahriar Habib](https://github.com/Shahriar-88)
 
 ## About App
 Using this app you can chat with others who are connected in a same network.
